@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Text Summarizer</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold text-center text-gray-800 mb-8">Advanced Text Summarizer</h1>
+        
+        <!-- Input Section -->
+        <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6 mb-8">
+            <form id="summarizeForm" class="space-y-6">
+                <div>
+                    <label for="text" class="block text-sm font-medium text-gray-700 mb-2">Enter your text:</label>
+                    <textarea 
+                        id="text" 
+                        name="text" 
+                        rows="6" 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required></textarea>
+                </div>
+                <!-- Add this inside the form, before the submit button -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div>
+        <label for="min_length" class="block text-sm font-medium text-gray-700 mb-2">
+            Minimum Length (words)
+        </label>
+        <input 
+            type="number" 
+            id="min_length" 
+            name="min_length" 
+            value="30"
+            min="10" 
+            max="500"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+    </div>
+    <div>
+        <label for="max_length" class="block text-sm font-medium text-gray-700 mb-2">
+            Maximum Length (words)
+        </label>
+        <input 
+            type="number" 
+            id="max_length" 
+            name="max_length" 
+            value="150"
+            min="50" 
+            max="1000"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+    </div>
+</div>
+                <div class="flex justify-center gap-4">
+                    <button 
+                        type="submit" 
+                        class="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        Analyze & Summarize
+                    </button>
+                    <button 
+                        type="button"
+                        id="historyButton"
+                        class="bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                        View History
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results" class="max-w-4xl mx-auto hidden">
+            <!-- Text Analysis Card -->
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+                <h2 class="text-xl font-semibold mb-4">Text Analysis</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Sentiment -->
+                    <div>
+                        <h3 class="font-medium text-gray-700 mb-2">Sentiment Analysis</h3>
+                        <canvas id="sentimentChart" class="w-full"></canvas>
+                    </div>
+                    
+                    <!-- Stats -->
+                    <div>
+                        <h3 class="font-medium text-gray-700 mb-2">Text Statistics</h3>
+                        <div id="textStats" class="space-y-2"></div>
+                    </div>
+                </div>
+                
+                <!-- Topics and Phrases -->
+                <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="font-medium text-gray-700 mb-2">Key Topics</h3>
+                        <div id="topicsList" class="flex flex-wrap gap-2"></div>
+                    </div>
+                    <div>
+                        <h3 class="font-medium text-gray-700 mb-2">Key Phrases</h3>
+                        <div id="phrasesList"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Formats Card -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-xl font-semibold mb-4">Summary Formats</h2>
+                
+                <!-- Headline -->
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-medium text-gray-700">Headline</h3>
+                        <button onclick="copyText('headline')" class="copy-btn">Copy</button>
+                    </div>
+                    <div id="headline" class="p-4 bg-yellow-50 rounded-md"></div>
+                </div>
+
+                <!-- Standard Summary -->
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-medium text-gray-700">Detailed Summary</h3>
+                        <button onclick="copyText('standard')" class="copy-btn">Copy</button>
+                    </div>
+                    <div id="standard" class="p-4 bg-gray-50 rounded-md"></div>
+                </div>
+
+                <!-- Bullet Points -->
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-medium text-gray-700">Key Points</h3>
+                        <button onclick="copyText('bullets')" class="copy-btn">Copy</button>
+                    </div>
+                    <ul id="bullets" class="list-disc list-inside p-4 bg-blue-50 rounded-md"></ul>
+                </div>
+
+                <!-- Social Post -->
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-medium text-gray-700">Social Media Version</h3>
+                        <button onclick="copyText('social')" class="copy-btn">Copy</button>
+                    </div>
+                    <div id="social" class="p-4 bg-green-50 rounded-md">
+                        <p id="socialText"></p>
+                        <div class="mt-2 text-sm text-gray-500" id="charCount"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Modal -->
+        <div id="historyModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden">
+            <div class="bg-white rounded-lg shadow-xl p-6 max-w-4xl mx-auto mt-20">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold">Summary History</h2>
+                    <button id="closeHistory" class="text-gray-500 hover:text-gray-700">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div id="historyContent" class="mt-4">
+                    <canvas id="historyChart"></canvas>
+                    <div id="historyList" class="mt-4 space-y-4"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div id="loading" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden">
+            <div class="flex items-center justify-center h-full">
+                <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500"></div>
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', path='/js/main.js') }}"></script>
+</body>
+</html>

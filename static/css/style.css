@@ -1,0 +1,56 @@
+body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.copy-btn {
+    background-color: #4F46E5;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    transition: all 0.2s;
+    font-size: 0.875rem;
+}
+
+.copy-btn:hover {
+    background-color: #4338CA;
+}
+
+.copy-btn:active {
+    transform: scale(0.98);
+}
+
+.topic-tag {
+    background-color: #EBF4FF;
+    color: #2B6CB0;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+}
+
+#results > div {
+    transition: all 0.3s ease;
+}
+
+#results > div:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.history-item {
+    border-left: 4px solid #4299E1;
+    padding-left: 1rem;
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}

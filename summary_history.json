@@ -1,0 +1,17 @@
+[
+    {
+        "timestamp": "2024-11-03 10:51:30",
+        "original_length": 1431,
+        "summary_length": 157,
+        "compression_ratio": 89.0,
+        "sentiment": "Negative",
+        "key_topics": [
+            "Customer",
+            "Support",
+            "service",
+            "app",
+            "crashed"
+        ],
+        "reading_time": 1
+    }
+]
